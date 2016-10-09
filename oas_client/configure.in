@@ -1,0 +1,249 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ([2.67])
+AC_INIT(ocsp-client, 1.0.2, jeff@wosign.com)
+AC_CONFIG_SRCDIR([src/main.cpp])
+
+AC_CONFIG_AUX_DIR(build)
+AC_CONFIG_MACRO_DIR([m4])
+AM_INIT_AUTOMAKE(ocsp-client,1.0.0)
+CFLAGS=-g -O2
+
+PACKAGE_NAME="ocsp-client"
+
+mybits=""
+if [[ `uname -p` = "x86_64" ]] ; then
+	mybits="64";
+fi
+AC_SUBST(mybits)
+
+if [[ "x$prefix" = "xNONE" ]] ; then
+		prefix=/usr/local
+fi
+AC_SUBST(prefix)
+
+sys_ldadd="-lpthread -lrt"
+
+AM_MAINTAINER_MODE
+
+# Checks for programs.
+AM_PROG_CC_STDC
+AM_PROG_CC_C_O
+
+
+dnl AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_INSTALL
+AC_PROG_MAKE_SET
+AC_PROG_LN_S
+
+
+# Checks for libraries.
+AC_CHECK_LIB([pthread], [pthread_mutex_init])
+
+AC_PATH_PROG(CHMOD, chmod)
+AC_PATH_PROG(PWD, pwd)
+
+# Checks for header files.
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h stdlib.h string.h strings.h sys/socket.h unistd.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+default_path=$PATH:/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin:/opt/csw/bin
+
+dnl Check for program paths
+AC_PATH_PROG( SHELL, bash, sh, $default_path)
+
+AC_CHECK_PROG( HAS_PKGCONF, pkg-config, yes, [] , $PATH)
+AC_SUBST(DESTDIR)
+AC_SUBST(ac_aux_dir)
+
+
+dnl ====================== openssl - openssl LIBRARIES ===================
+
+old_cflags=$CFLAGS
+old_ldflags=$LDFLAGS
+
+openssl_cflags=
+openssl_ldflags=
+openssl_ldadd="-lcrypto -lssl"
+openssl_include=
+openssl_setup=no
+openssl_engine=
+openssl_static_libs=
+openssl_min_ver=0.9.8
+openssl_pkg_min_ver=0.9.8
+enable_shared=yes
+
+AC_ARG_WITH( openssl-prefix,
+	AC_HELP_STRING( [--with-openssl-prefix=DIR], [openssl prefix]),
+	openssl_prefix=$withval, openssl_prefix= )
+AC_SUBST(openssl_prefix)
+
+AC_MSG_RESULT([with openssl-prefix     : $openssl_prefix ])
+
+
+if ! [[ "x${openssl_prefix}" = "x" ]]; then
+	if [[ -d "$openssl_prefix/lib/$mybits" ]] ; then
+    	openssl_path=$openssl_prefix/lib$mybits
+  	else
+    	openssl_path=$openssl_prefix/lib
+  	fi
+
+  	AC_MSG_RESULT([openssl lib dir         : $openssl_path])
+else
+  	AC_MSG_RESULT([openssl lib dir         : $openssl_path (default)])
+
+	AC_MSG_RESULT([crypto package for token operations... OPENSSL])
+
+  	AC_DEFINE(ENABLE_OPENSSL, 1, [OPENSSL])
+
+	openssl_setup=yes
+
+
+	if ! [[ "x${HAS_PKGCONF}" = "x"  ]]; then
+   		PKG_CHECK_MODULES( OPENSSL,openssl >= $openssl_pkg_min_ver, [
+	   	AC_MSG_RESULT([openssl $openssl_pkg_min_ver or greater found via pkgconfig])
+			   openssl_cflags=$OPENSSL_CFLAGS
+			   openssl_ldflags=$OPENSSL_LIBS
+			   openssl_prefix=$prefix
+			   openssl_ldadd="-lssl -lcrypto"
+			   openssl_ldflags=`echo $openssl_ldflags | sed "s|-lssl||" | sed "s|-lcrypto||"`
+			   openssl_setup=yes
+			fi], [AC_MSG_RESULT( [good openssl not found via pkgconfig]) ])
+
+
+	#dirs="/opt/local/lib$mybits /lib$mybits /usr/lib$mybits /usr/local/lib$mybits /usr/local/ssl/lib$mybits /opt/csw/lib /opt/csw /usr/sfw/lib /usr/local/openssl"
+	dirs="/local/lib$mybits /lib$mybits /usr/lib$mybits /usr/local/lib$mybits /usr/local/ssl/lib$mybits /opt/csw/lib /opt/csw /usr/sfw/lib /usr/local/openssl"
+
+	library_cflags=
+	library_ldflags=
+	library_ldadd=
+	library_ldpath=
+	library_prefix=
+	library_libs=
+	library_setup=
+	library_shared=
+	error_number=
+
+	AC_CHECK_OPENSSL_PATH($openssl_min_ver, "$openssl_prefix", $dirs, $mybits)
+	if [[ "$library_setup" = "no" ]] ; then
+		AC_MSG_ERROR([**** ERROR: Can not configure OPENSSL library ($error_number)!])
+	fi
+
+	AC_MSG_RESULT([OpenSSL Prefix: $openssl_prefix])
+
+	if [[ -d "${library_prefix%/lib$mybits}" ]] ; then
+		openssl_prefix="${library_prefix%/lib$mybits}"
+	else
+		openssl_prefix="${library_prefix%/lib}"
+	fi
+
+	openssl_cflags="$library_cflags"
+	openssl_ldflags="$library_ldflags"
+	openssl_ldadd="$library_ldadd"
+	openssl_include="-I$library_prefix/include"
+
+	AC_MSG_RESULT([OpenSSL Prefix: $openssl_prefix])
+
+	if ! [[ "x$openssl_prefix" = "x" ]] ; then
+		if [[ -d "${openssl_prefix}/lib$mybits" ]] ; then
+			openssl_path="${openssl_prefix}/lib$mybits";
+		else
+			openssl_path="${openssl_prefix}/lib"
+		fi
+
+		if test ! -z "$need_dash_r" ; then
+   	     	rpath="${rpath_opt} \"${openssl_path}\" ${rpath}"
+		else
+   	     	rpath="${rpath_opt}\"${openssl_path}\" ${rpath}"
+		fi
+
+		ld_lib_path="$xml2_path:$ld_lib_path"
+	fi
+
+	if [[ "${enable_shared}" = "yes" ]] ; then
+		if [[ "${library_shared}" = "no" ]] ; then
+			AC_MSG_ERROR([***** ERROR: no shared openssl libs found!])
+		fi
+	else
+		openssl_static_libs="$openssl_ldflags"
+	fi
+
+
+	if [[ "x$openssl_ldadd" = "x" ]] ; then
+		openssl_ldadd="-lcrypto -lssl"
+	fi
+
+
+	CFLAGS="${openssl_cflags}"
+	LDFLAGS="${openssl_ldflags} ${openssl_ldadd} ${openssl_static_libs}"
+
+	if [[ "$iphone_build" = "no" ]] ; then
+    	AC_SEARCH_LIBS(BIO_new, "crypto", [ ] ,
+		AC_MSG_ERROR([**** ERROR::OpenSSL not Configured! (do you have the devel packages?) ****]), [-L$openssl_prefix/lib ] )
+	fi
+
+
+	CFLAGS="${old_cflags}"
+	LDFLAGS="${old_ldflags}"
+
+	AC_MSG_RESULT([ OPENSSL ldflags: ................. ${openssl_ldflags}])
+	AC_MSG_RESULT([ OPENSSL ldadd: ................... ${openssl_ldadd}])
+
+	AC_SUBST(openssl_cflags)
+	AC_SUBST(openssl_ldflags)
+	AC_SUBST(openssl_ldadd)
+	AC_SUBST(openssl_static_libs)
+	AC_SUBST(openssl_prefix)
+fi
+
+
+my_cflags="$CFLAGS ${openssl_cflags}"
+my_ldflags="$LDFLAGS ${openssl_ldflags}"
+my_ldadd="$sys_ldadd $openssl_ldadd "
+
+AC_SUBST(my_cflags)
+AC_SUBST(my_ldflags)
+AC_SUBST(my_ldadd)
+
+
+# Checks for library functions.
+AC_FUNC_MALLOC
+AC_FUNC_STRERROR_R
+AC_CHECK_FUNCS([bzero inet_ntoa memset mkdir select socket strchr strdup strerror])
+AC_OUTPUT(Makefile
+		  src/Makefile)
+
+
+echo "
+OpenSSL Configuration:
+----------------------
+
+ Library ..............: OpenSSL
+ Prefix ...............: $openssl_prefix
+ Compiler Flags .......: $openssl_cflags"
+if [[ "${enable_shared}" = "yes" ]] ; then
+	echo " Linker Flags .........: $openssl_ldflags"
+	echo " libs .................: $openssl_ldadd"
+else
+	echo " Libs Flags (static)...: $openssl_static_libs (${enable_shared})"
+fi
+
+
+echo "
+Configuration for $PACKAGE $VERSION :
+--------------------------------
+
+ Host System Type .....: $host
+ Install path .........: $prefix
+ Compiler Flags .......: $my_cflags
+ Linker Flags .........: $my_ldflags
+ Libs .................: $my_ldadd
+"
+
+echo "
+ Now type 'make' to build $PACKAGE_NAME $VERSION,
+ and then 'make install' for installation.
+"
+

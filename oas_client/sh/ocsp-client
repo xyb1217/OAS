@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+# Startup script for the OCSP client
+#
+# chkconfig: 345 85 15
+# description: OCSP client
+# processname: ocsp-client
+
+prefix="/usr/local";
+sbin="${prefix}/sbin";
+etc="${prefix}/etc/ocsp-client";
+run="${prefix}/var/run";
+logfile="${prefix}/var/run/ocsp-client.log";
+
+ocsp_client="${sbin}/ocsp_client";
+conf="${etc}/ocsp-client.xml";
+
+# Check the 
+pidfile="${run}/ocsp-client.pid";
+pid=`cat $pidfile 2>/dev/null`;
+
+if [ -z "$pid" ] ; then
+	shellPid=$$
+	ocspPid=`pgrep ocsp_client`
+	pid=`echo $ocspPid | sed -e "s|$shellPid||" | sed -e "s| ||g"`
+fi
+
+# See how we were called.
+case "$1" in
+  start)
+	echo -n "Starting OCSP client: "
+	kill -s 0 "$pid" 2>/dev/null && 
+		echo "ERROR, client is already running" ||
+		( ${ocsp_client} -c "${conf}" -d && echo "Done." ||
+			echo "Error, check logs!" );
+	;;
+  start-debug)
+	echo -n "Starting OCSP client: "
+	kill -s 0 "$pid" 2>/dev/null && 
+		echo "ERROR, client is already running" ||
+		( ${ocsp_client} -c "${conf}" -d -v && echo "Done." ||
+			echo "Error, check logs!" );
+	echo "Done."
+	;;
+  stop)
+	echo -n "Shutting down OCSP client: "
+	kill -s 15 "${pid}" 2> /dev/null && 
+			echo "Done." ||
+			echo "already stopped?"
+	rm -f "$pidfile"
+	;;
+  status)
+	echo -n "OCSP client is "
+	kill -s 0 "$pid" 2>/dev/null && echo "running ( $pid )" ||
+			echo "stopped."
+	;;
+  restart)
+	$0 stop
+	sleep 2
+	$0 start
+	;;
+  *)
+	echo "Usage: $0 {start|start-debug|stop|status|restart}"
+	exit 1
+esac
+
+exit 0

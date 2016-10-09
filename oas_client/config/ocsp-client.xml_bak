@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<config>
+	<general>
+		<logfile>/usr/local/var/run/ocsp_client.log</logfile>
+		<pidfile>/usr/local/var/run/ocsp_client.pid</pidfile>
+		<threadpoolsize>1</threadpoolsize>
+		<reqgroupcount>0</reqgroupcount>
+	</general>
+	<cer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/ca1.cer" ocspurl="http://58.68.232.12/ca1">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca1_ev_root.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/ca2.cer" ocspurl="http://58.68.232.12/ca2">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca2_dv_root.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class1.client.ca1.cer" ocspurl="http://58.68.232.12/class1/client/ca1">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca1_cc1.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class2.client.ca1.cer" ocspurl="http://58.68.232.12/class2/client/ca1">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca1_cc2.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class3.client.ca1.cer" ocspurl="http://58.68.232.12/class3/client/ca1">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca1_cc3.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class3.pdf.ca1.cer" ocspurl="http://58.68.232.12/class3/pdf/ca1">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca1_pdf.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class2.code.ca1.cer" ocspurl="http://58.68.232.12/class2/code/ca1">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca1_code2.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class3.code.ca1.cer" ocspurl="http://58.68.232.12/class3/code/ca1">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca1_code3.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class1.server.ca1.cer" ocspurl="http://58.68.232.12/class1/server/ca1">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca1_dv.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class2.server.ca1.cer" ocspurl="http://58.68.232.12/class2/server/ca1">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca1_iv.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class3.server.ca1.cer" ocspurl="http://58.68.232.12/class3/server/ca1">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca1_ov.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class4.server.ca1.cer" ocspurl="http://58.68.232.12/class4/server/ca1">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca1_ev.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class3p.server.ca1.cer" ocspurl="http://58.68.232.12/class3p/server/ca1">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca1_ov_pro.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class4p.server.ca1.cer" ocspurl="http://58.68.232.12/class4p/server/ca1">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca1_ev_pro.cer</clientcer>
+		</cacer>
+
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class1.client.ca2.cer" ocspurl="http://58.68.232.12/class1/client/ca2">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca2_cc1.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class2.client.ca2.cer" ocspurl="http://58.68.232.12/class2/client/ca2">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca2_cc2.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class3.client.ca2.cer" ocspurl="http://58.68.232.12/class3/client/ca2">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca2_cc3.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class3.code.ca2.cer" ocspurl="http://58.68.232.12/class3/code/ca2">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca2_code3.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class1.server.ca2.cer" ocspurl="http://58.68.232.12/class1/server/ca2">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca2_dv.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class3.server.ca2.cer" ocspurl="http://58.68.232.12/class3/server/ca2">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca2_ov.cer</clientcer>
+		</cacer>
+		<cacer path="/usr/local/etc/ocsp-client/cacer/class4.server.ca2.cer" ocspurl="http://58.68.232.12/class4/server/ca2">
+			<clientcer>/usr/local/etc/ocsp-client/clientcer/ca2_ev.cer</clientcer>
+		</cacer>
+	</cer>
+	<log>
+		<!-- reset interval with `resetInterval` seconds 1 day == 86400s-->
+		<resetInterval>86400</resetInterval>
+		<!-- reset interval with `printInterval` seconds -->
+		<printInterval>60</printInterval>
+	<log>
+</config>

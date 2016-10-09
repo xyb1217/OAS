@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<config>
+	<general>
+		<logfile>/usr/local/var/run/ocsp_client.log</logfile>
+		<pidfile>/usr/local/var/run/ocsp_client.pid</pidfile>
+		<threadpoolsize>1</threadpoolsize>
+		<reqgroupcount>0</reqgroupcount>
+	</general>
+	<cer>
+		<cacer path="/home/wosign/work/ocspclient/ocsp-client-1.0.2/config/cacer/ca1.cer" ocspurl="http://172.31.90.252/ca1">
+			<clientcer>/home/wosign/work/ocspclient/ocsp-client-1.0.2/config/clientcer/ca1_ev_root.cer</clientcer>
+		</cacer>
+		<cacer path="/home/wosign/work/ocspclient/ocsp-client-1.0.2/config/cacer/ca2.cer" ocspurl="http://172.31.18.179/ca2">
+			<clientcer>/home/wosign/work/ocspclient/ocsp-client-1.0.2/config/clientcer/ca2_dv_root.cer</clientcer>
+		</cacer>
+		<cacer path="/home/wosign/work/ocspclient/ocsp-client-1.0.2/config/cacer/class1.client.ca1.cer" ocspurl="http://172.31.18.179/class1/client/ca1">
+			<clientcer>/home/wosign/work/ocspclient/ocsp-client-1.0.2/config/clientcer/ca1_cc1.cer</clientcer>
+		</cacer>
+		<cacer path="/home/wosign/work/ocspclient/ocsp-client-1.0.2/config/cacer/class2.client.ca1.cer" ocspurl="http://172.31.18.179/class2/client/ca1">
+			<clientcer>/home/wosign/work/ocspclient/ocsp-client-1.0.2/config/clientcer/ca1_cc2.cer</clientcer>
+		</cacer>
+	</cer>
+	<log>
+		<!-- reset interval with `resetInterval` seconds 1 day == 86400s-->
+		<resetInterval>86400</resetInterval>
+		<!-- reset interval with `printInterval` seconds -->
+		<printInterval>60</printInterval>
+	<log>
+</config>

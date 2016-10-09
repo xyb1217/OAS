@@ -1,0 +1,11 @@
+1,依次执行下列命令安装ocsp-client程序：
+	>./configure
+	>make
+	>sudo make install
+
+
+2,安装后进入/usr/local/etc/init.d目录执行下列命令运行ocsp-client程序
+	>./ocsp-client start
+
+
+3,相关日志路径为：/usr/local/var/run/ocsp_client.log
